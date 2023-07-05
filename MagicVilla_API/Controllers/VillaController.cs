@@ -106,7 +106,7 @@ namespace MagicVilla_API.Controllers
                 if (await _villaRepo.Obtener(v => v.Nombre.ToLower()
                         == createDto.Nombre.ToLower()) != null)
                 {
-                    ModelState.AddModelError("NombreExiste", "Ya existe una billa con ese Nombre");
+                    ModelState.AddModelError("ErrorMessages", "Ya existe una billa con ese Nombre");
                     return BadRequest(ModelState);
                 }
 

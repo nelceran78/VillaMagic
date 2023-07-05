@@ -2,13 +2,14 @@
 using MagicVilla_Web.Models;
 using MagicVilla_Web.Services.IServices;
 using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace MagicVilla_Web.Services
 {
     public class BaseService : IBaseService
     {
+
         public APIResponse responseModel { get; set; }
         public IHttpClientFactory _httpClient { get; set; }
 
@@ -18,7 +19,6 @@ namespace MagicVilla_Web.Services
             _httpClient = httpClient;
         }
 
-
         public async Task<T> SendAsync<T>(APIRequest apiRequest)
         {
             try
@@ -26,7 +26,6 @@ namespace MagicVilla_Web.Services
                 var client = _httpClient.CreateClient("MagicAPI");
                 HttpRequestMessage message = new HttpRequestMessage();
                 message.Headers.Add("Accept", "application/json");
-
                 message.RequestUri = new Uri(apiRequest.Url);
 
                 if (apiRequest.Datos != null)
@@ -52,25 +51,41 @@ namespace MagicVilla_Web.Services
                 }
 
                 HttpResponseMessage apiResponse = null;
-
                 apiResponse = await client.SendAsync(message);
-
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();
+
+
+                try
+                {
+                    APIResponse response = JsonConvert.DeserializeObject<APIResponse>(apiContent);
+                    if (apiResponse.StatusCode == HttpStatusCode.BadRequest || apiResponse.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        response.statusCode = HttpStatusCode.BadRequest;
+                        response.IsExitoso = false;
+                        var res = JsonConvert.SerializeObject(response);
+                        var obj = JsonConvert.DeserializeObject<T>(res);
+                        return obj;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var errorResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                    return errorResponse;
+                }
+
                 var APIResponse = JsonConvert.DeserializeObject<T>(apiContent);
                 return APIResponse;
-
-
             }
             catch (Exception ex)
             {
                 var dto = new APIResponse
                 {
-                    ErrorMensages = new List<string> { Convert.ToString(ex.Message) },
+                    ErrorMessages = new List<string> { Convert.ToString(ex.Message) },
                     IsExitoso = false
                 };
                 var res = JsonConvert.SerializeObject(dto);
-                var APIResponse = JsonConvert.DeserializeObject<T>(res);
-                return APIResponse;
+                var responseEx = JsonConvert.DeserializeObject<T>(res);
+                return responseEx;
             }
         }
     }
