@@ -196,7 +196,7 @@ namespace MagicVilla_API.Controllers
 
                 Villa modelo = _mapper.Map<Villa>(updateDto);
 
-
+                modelo.FechaActualizacion = DateTime.Now;
                 await _villaRepo.Actualizar(modelo);
                 _response.statusCode = HttpStatusCode.NoContent;
 
