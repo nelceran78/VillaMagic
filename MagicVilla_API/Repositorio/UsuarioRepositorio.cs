@@ -41,7 +41,7 @@ namespace MagicVilla_API.Repositorio
                 return new LoginResponseDto()
                 {
                     Token = "",
-                    Ususario = null
+                    Usuario = null
                 };
             }
 
@@ -63,7 +63,7 @@ namespace MagicVilla_API.Repositorio
             LoginResponseDto loginResponseDto = new()
             {
                 Token = tokenHandler.WriteToken(token),
-                Ususario = usuario,
+                Usuario = usuario,
             };
             return loginResponseDto;
         }
