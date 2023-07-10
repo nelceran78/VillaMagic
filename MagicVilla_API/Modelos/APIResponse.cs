@@ -16,5 +16,7 @@ namespace MagicVilla_API.Modelos
 
         public object Resultado { get; set; }
 
+        public int TotalPaginas { get; set; }
+
     }
 }
