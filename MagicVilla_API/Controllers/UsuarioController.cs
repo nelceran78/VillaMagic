@@ -7,8 +7,9 @@ using System.Net;
 
 namespace MagicVilla_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersionNeutral]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioRepositorio _usuarioRepo;
@@ -24,7 +25,7 @@ namespace MagicVilla_API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequestDto modelo)
         {
             var loginResponse = await _usuarioRepo.Login(modelo);
-            if(loginResponse.Usuario == null || string.IsNullOrEmpty(loginResponse.Token))
+            if (loginResponse.Usuario == null || string.IsNullOrEmpty(loginResponse.Token))
             {
                 _response.statusCode = HttpStatusCode.BadRequest;
                 _response.IsExitoso = false;
@@ -43,7 +44,7 @@ namespace MagicVilla_API.Controllers
         {
             bool isUsuarioUnico = _usuarioRepo.IsUsuarioUnico(modelo.UserName);
 
-            if(!isUsuarioUnico)
+            if (!isUsuarioUnico)
             {
                 _response.statusCode = HttpStatusCode.BadRequest;
                 _response.IsExitoso = false;
